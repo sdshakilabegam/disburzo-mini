@@ -319,3 +319,43 @@
     flex-wrap: wrap;
   }
 }
+a.menu-btn {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 14px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  color: var(--sidebar-text);
+  text-decoration: none;
+  font-size: 14px;
+  outline: none;
+}
+
+a.menu-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+a.menu-btn.active {
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.role-select {
+  width: auto;
+  min-width: 150px;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: nowrap;
+}

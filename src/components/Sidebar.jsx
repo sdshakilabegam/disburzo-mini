@@ -1,4 +1,6 @@
-function Sidebar({ items, activeId, onSelect }) {
+import { NavLink } from "react-router-dom";
+
+function Sidebar({ items }) {
   return (
     <aside className="sidebar">
       <h2 className="logo">Disburzo Mini</h2>
@@ -6,14 +8,14 @@ function Sidebar({ items, activeId, onSelect }) {
         <ul>
           {items.map((item) => (
             <li key={item.id}>
-              <button
-                className={
-                  item.id === activeId ? "menu-btn active" : "menu-btn"
+              <NavLink
+                to={`/${item.id}`}
+                className={({ isActive }) =>
+                  isActive ? "menu-btn active" : "menu-btn"
                 }
-                onClick={() => onSelect(item.id)}
               >
                 {item.label}
-              </button>
+              </NavLink>
             </li>
           ))}
         </ul>

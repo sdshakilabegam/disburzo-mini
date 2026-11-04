@@ -1,14 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DataTable from "../components/DataTable";
 import StatusBadge from "../components/StatusBadge";
 import CustomerForm from "../components/CustomerForm";
 import { initialCustomers } from "../data/customers";
+import { can } from "../data/roles";
 
-function Customers() {
-  const [customers, setCustomers] = useState(initialCustomers);
+function Customers({ role }) {
+  const [customers, setCustomers] = useState(() => {
+    const saved = localStorage.getItem("customers");
+    return saved ? JSON.parse(saved) : initialCustomers;
+  });
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState(null);
+
+  useEffect(() => {
+    localStorage.setItem("customers", JSON.stringify(customers));
+  }, [customers]);
 
   const filtered = customers.filter((c) =>
     c.name.toLowerCase().includes(search.toLowerCase()),
@@ -43,6 +51,10 @@ function Customers() {
     closeForm();
   };
 
+  const handleDelete = (id) => {
+    setCustomers(customers.filter((c) => c.id !== id));
+  };
+
   const columns = [
     { key: "id", label: "ID" },
     { key: "name", label: "Name" },
@@ -57,12 +69,29 @@ function Customers() {
       key: "actions",
       label: "Actions",
       render: (row) => (
-        <button className="btn btn-small" onClick={() => openEdit(row)}>
-          Edit
-        </button>
+        <div className="actions">
+          {can(role, "edit") && (
+            <button className="btn btn-small" onClick={() => openEdit(row)}>
+              Edit
+            </button>
+          )}
+          {can(role, "delete") && (
+            <button
+              className="btn btn-small"
+              onClick={() => handleDelete(row.id)}
+            >
+              Delete
+            </button>
+          )}
+        </div>
       ),
     },
   ];
+
+  const showActions = can(role, "edit") || can(role, "delete");
+  const visibleColumns = showActions
+    ? columns
+    : columns.filter((c) => c.key !== "actions");
 
   return (
     <div>
@@ -83,12 +112,14 @@ function Customers() {
             onChange={(e) => setSearch(e.target.value)}
           />
           <span className="count">{filtered.length} customers</span>
-          <button className="btn" onClick={openAdd}>
-            + Add customer
-          </button>
+          {can(role, "add") && (
+            <button className="btn" onClick={openAdd}>
+              + Add customer
+            </button>
+          )}
         </div>
         <DataTable
-          columns={columns}
+          columns={visibleColumns}
           rows={filtered}
           emptyText="No customers found"
         />
